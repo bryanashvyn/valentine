@@ -37,7 +37,6 @@
       padding: 16px;
     }
 
-    /* FULL-SCREEN CONFETTI CANVAS */
     #confettiCanvas {
       position: fixed;
       inset: 0;
@@ -58,7 +57,6 @@
       transform-origin: center;
     }
 
-    /* subtle heartbeat */
     .card.heartbeat {
       animation: heartbeat 1.2s ease-in-out infinite;
     }
@@ -68,7 +66,6 @@
       margin: 0 auto 10px;
       display: block;
       filter: drop-shadow(0 10px 14px rgba(0,0,0,.10));
-      /* ✅ bounce / float */
       animation: floaty 2.8s ease-in-out infinite;
       will-change: transform;
     }
@@ -154,7 +151,6 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* ✅ gentle bounce */
     @keyframes floaty {
       0%   { transform: translateY(0); }
       50%  { transform: translateY(-8px); }
@@ -167,34 +163,30 @@
   <canvas id="confettiCanvas"></canvas>
 
   <main class="card" id="card">
-    <!-- ✅ Coconut SVG -->
+    <!-- Coconut SVG (no heart) -->
     <svg class="art" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <defs>
         <linearGradient id="cocoShell" x1="0" x2="1">
           <stop offset="0%" stop-color="#b08968"/>
           <stop offset="100%" stop-color="#7f5539"/>
         </linearGradient>
-
-        <linearGradient id="cocoHeart" x1="0" x2="1">
-          <stop offset="0%" stop-color="#ff6b9a"/>
-          <stop offset="100%" stop-color="#ff3b7a"/>
-        </linearGradient>
       </defs>
 
-      <!-- coconut body -->
       <ellipse cx="130" cy="145" rx="85" ry="90" fill="url(#cocoShell)" />
 
-      <!-- coconut top holes -->
       <circle cx="110" cy="115" r="6" fill="#4a2c1a"/>
       <circle cx="130" cy="110" r="6" fill="#4a2c1a"/>
       <circle cx="150" cy="115" r="6" fill="#4a2c1a"/>
 
-      <!-- eyes -->
       <circle cx="105" cy="155" r="7" fill="#1f2937"/>
       <circle cx="155" cy="155" r="7" fill="#1f2937"/>
 
-      <!-- smile -->
-      <path d="M110 170 Q130 185 150 170" stroke="#1f2937" stroke-width="4" fill="none" stroke-linecap="
+      <!-- ✅ FIXED: properly closed path + stroke-linecap -->
+      <path d="M110 170 Q130 185 150 170"
+            stroke="#1f2937"
+            stroke-width="4"
+            fill="none"
+            stroke-linecap="round" />
     </svg>
 
     <h1>Khushi, will you be my Valentine?</h1>
@@ -204,15 +196,13 @@
       <button id="noBtn">No</button>
     </section>
 
-    <div class="hint" id="hint"> “No” seems a bit shy (just like me) </div>
+    <div class="hint" id="hint">“No” seems a bit shy (just like me)</div>
 
     <section class="result" id="result">
-      <h2>
-        Thank you for saying yes but we know there wasn't any other choice
-      </h2>
+      <h2>Thank you for saying yes but we know there wasn't any other choice</h2>
 
       <div style="font-weight:700; opacity:.9; margin: 10px 0 6px;">
-       i love you khushi
+        i love you khushi
       </div>
 
       <div id="dateTimeText" style="
@@ -242,10 +232,8 @@
     const dateTimeText = document.getElementById("dateTimeText");
     const card = document.getElementById("card");
 
-    // ✅ Edit this one line only:
-    const VALENTINE_DATE_TEXT = "see you on 14 february at 6:00pm baby" ;
+    const VALENTINE_DATE_TEXT = "see you on 14 february at 6:00pm baby";
 
-    /* ---------- CONFETTI CANVAS (resize-safe) ---------- */
     const confettiCanvas = document.getElementById("confettiCanvas");
 
     function resizeCanvas() {
@@ -265,7 +253,6 @@
       useWorker: true
     });
 
-    /* ✅ One burst only (no constant confetti) */
     function burstConfetti() {
       confettiInstance({
         particleCount: 260,
@@ -276,14 +263,12 @@
       });
     }
 
-    /* ---------- YES BUTTON GROWS ---------- */
     let yesScale = 1;
     function growYes() {
       yesScale = Math.min(2.2, yesScale + 0.1);
       yesBtn.style.transform = `translateY(-50%) scale(${yesScale})`;
     }
 
-    /* ---------- NO BUTTON RUNS AWAY + SURRENDERS ---------- */
     function clamp(n, min, max) {
       return Math.max(min, Math.min(max, n));
     }
@@ -367,10 +352,8 @@
 
     noBtn.addEventListener("pointerenter", (e) => moveNo(e.clientX, e.clientY));
     noBtn.addEventListener("mouseenter", (e) => moveNo(e.clientX, e.clientY));
-
     noBtn.addEventListener("click", (e) => e.preventDefault());
 
-    /* ---------- Typing animation for date/time ---------- */
     function typeText(el, text, speed = 35) {
       el.textContent = "";
       let i = 0;
@@ -381,7 +364,6 @@
       }, speed);
     }
 
-    /* ---------- YES CLICK ---------- */
     yesBtn.addEventListener("click", () => {
       zone.style.display = "none";
       hint.style.display = "none";
