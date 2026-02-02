@@ -9,14 +9,15 @@
 
   <style>
     :root {
-      /* Romantic sage green palette */
-      --bg1: #cfe9dc;   /* soft sage */
-      --bg2: #eef7f2;   /* light mint */
-      --bg3: #e2f2ea;   /* subtle blend */
+      --bg1: #cfe9dc;
+      --bg2: #eef7f2;
+      --bg3: #e2f2ea;
       --card: #ffffffcc;
 
-      --yes: #2f9e6f;   /* romantic green */
+      --yes: #2f9e6f;
       --yesHover: #24875f;
+      --text: #0f172a;
+      --muted: rgba(15, 23, 42, 0.70);
     }
 
     * { box-sizing: border-box; }
@@ -26,15 +27,13 @@
       min-height: 100svh;
       display: grid;
       place-items: center;
-
-      /* Animated green gradient */
       background: linear-gradient(120deg, var(--bg2), var(--bg1), var(--bg3));
       background-size: 300% 300%;
       animation: sageFlow 18s ease-in-out infinite;
-
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       overflow: hidden;
       padding: 16px;
+      color: var(--text);
     }
 
     #confettiCanvas {
@@ -48,7 +47,7 @@
 
     .card {
       width: min(720px, 92vw);
-      padding: 26px 22px;
+      padding: 26px 22px 24px;
       background: var(--card);
       backdrop-filter: blur(10px);
       border-radius: 22px;
@@ -57,13 +56,11 @@
       transform-origin: center;
     }
 
-    .card.heartbeat {
-      animation: heartbeat 1.2s ease-in-out infinite;
-    }
+    .card.heartbeat { animation: heartbeat 1.2s ease-in-out infinite; }
 
     .art {
-      width: min(260px, 80vw);
-      margin: 0 auto 10px;
+      width: min(220px, 72vw);
+      margin: 4px auto 10px;
       display: block;
       filter: drop-shadow(0 10px 14px rgba(0,0,0,.10));
       animation: floaty 2.8s ease-in-out infinite;
@@ -71,8 +68,10 @@
     }
 
     h1 {
-      font-size: clamp(26px, 4vw, 44px);
-      margin: 12px 0 18px;
+      font-size: clamp(24px, 4vw, 40px);
+      line-height: 1.1;
+      margin: 10px 0 14px;
+      letter-spacing: -0.3px;
     }
 
     .button-zone {
@@ -105,7 +104,6 @@
       color: #fff;
       box-shadow: 0 14px 34px rgba(47, 158, 111, 0.35);
     }
-
     #yesBtn:hover { background: var(--yesHover); }
 
     #noBtn {
@@ -117,45 +115,56 @@
     .hint {
       margin-top: 10px;
       font-size: 13px;
-      opacity: .7;
+      color: var(--muted);
     }
 
     .result {
       display: none;
-      margin-top: 18px;
+      margin-top: 14px;
       animation: pop .35s ease;
     }
 
-    .result h2 {
-      font-size: clamp(22px, 4vw, 34px);
-      margin: 10px 0;
+    .resultTitle {
+      font-size: clamp(20px, 3.2vw, 28px);
+      margin: 8px 0 6px;
+      font-weight: 900;
+      letter-spacing: -0.2px;
     }
 
-    @keyframes pop {
-      from { transform: scale(.96); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+    .resultSub {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1.35;
     }
 
+    .pill {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      padding: 12px 16px;
+      display: inline-block;
+      border-radius: 999px;
+      background: #ffffffb8;
+      box-shadow: 0 10px 24px rgba(0,0,0,.10);
+      min-width: 240px;
+    }
+
+    .footerLine {
+      margin-top: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @keyframes pop { from { transform: scale(.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     @keyframes heartbeat {
-      0%   { transform: scale(1); }
-      14%  { transform: scale(1.02); }
-      28%  { transform: scale(1); }
-      42%  { transform: scale(1.015); }
-      70%  { transform: scale(1); }
-      100% { transform: scale(1); }
+      0% { transform: scale(1); } 14% { transform: scale(1.02); } 28% { transform: scale(1); }
+      42% { transform: scale(1.015); } 70% { transform: scale(1); } 100% { transform: scale(1); }
     }
-
-    @keyframes sageFlow {
-      0%   { background-position: 0% 50%; }
-      50%  { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    @keyframes floaty {
-      0%   { transform: translateY(0); }
-      50%  { transform: translateY(-8px); }
-      100% { transform: translateY(0); }
-    }
+    @keyframes sageFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    @keyframes floaty { 0% { transform: translateY(0); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0); } }
   </style>
 </head>
 
@@ -163,30 +172,39 @@
   <canvas id="confettiCanvas"></canvas>
 
   <main class="card" id="card">
-    <!-- Coconut SVG (no heart) -->
+
+    <!-- ✅ More coconut-like SVG (no "3 holes") -->
     <svg class="art" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <defs>
-        <linearGradient id="cocoShell" x1="0" x2="1">
-          <stop offset="0%" stop-color="#b08968"/>
-          <stop offset="100%" stop-color="#7f5539"/>
-        </linearGradient>
+        <radialGradient id="shell" cx="35%" cy="30%" r="85%">
+          <stop offset="0%" stop-color="#b99274"/>
+          <stop offset="65%" stop-color="#8a5b3c"/>
+          <stop offset="100%" stop-color="#6f442c"/>
+        </radialGradient>
+        <radialGradient id="highlight" cx="35%" cy="30%" r="65%">
+          <stop offset="0%" stop-color="rgba(255,255,255,0.35)"/>
+          <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+        </radialGradient>
       </defs>
 
-      <ellipse cx="130" cy="145" rx="85" ry="90" fill="url(#cocoShell)" />
+      <!-- body -->
+      <circle cx="130" cy="138" r="90" fill="url(#shell)"/>
 
-      <circle cx="110" cy="115" r="6" fill="#4a2c1a"/>
-      <circle cx="130" cy="110" r="6" fill="#4a2c1a"/>
-      <circle cx="150" cy="115" r="6" fill="#4a2c1a"/>
+      <!-- top "cap" to hint coconut crown -->
+      <path d="M80 78 Q130 52 180 78 Q130 95 80 78Z" fill="rgba(0,0,0,0.14)"/>
 
-      <circle cx="105" cy="155" r="7" fill="#1f2937"/>
-      <circle cx="155" cy="155" r="7" fill="#1f2937"/>
+      <!-- subtle texture lines -->
+      <path d="M75 128 Q130 108 185 128" stroke="rgba(0,0,0,0.12)" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M70 150 Q130 130 190 150" stroke="rgba(0,0,0,0.10)" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M78 172 Q130 158 182 172" stroke="rgba(0,0,0,0.09)" stroke-width="4" fill="none" stroke-linecap="round"/>
 
-      <!-- ✅ FIXED: properly closed path + stroke-linecap -->
-      <path d="M110 170 Q130 185 150 170"
-            stroke="#1f2937"
-            stroke-width="4"
-            fill="none"
-            stroke-linecap="round" />
+      <!-- face -->
+      <circle cx="102" cy="148" r="7" fill="#0f172a"/>
+      <circle cx="158" cy="148" r="7" fill="#0f172a"/>
+      <path d="M110 164 Q130 178 150 164" stroke="#0f172a" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+      <!-- highlight -->
+      <circle cx="110" cy="120" r="70" fill="url(#highlight)"/>
     </svg>
 
     <h1>Khushi, will you be my Valentine?</h1>
@@ -196,28 +214,15 @@
       <button id="noBtn">No</button>
     </section>
 
-    <div class="hint" id="hint">“No” seems a bit shy (just like me)</div>
+    <div class="hint" id="hint">“No” seems a bit shy 😌</div>
 
     <section class="result" id="result">
-      <h2>Thank you for saying yes but we know there wasn't any other choice</h2>
+      <div class="resultTitle"> Everyday is Valentines with you❤️ </div>
+      <div class="resultSub">I love you, Khushi.</div>
 
-      <div style="font-weight:700; opacity:.9; margin: 10px 0 6px;">
-        i love you khushi
-      </div>
+      <div id="dateTimeText" class="pill"></div>
 
-      <div id="dateTimeText" style="
-        font-size: 20px;
-        font-weight: 900;
-        letter-spacing: .2px;
-        padding: 10px 14px;
-        display: inline-block;
-        border-radius: 999px;
-        background: #ffffffa8;
-        box-shadow: 0 10px 24px rgba(0,0,0,.10);
-        min-width: 220px;
-      "></div>
-
-      <div style="margin-top: 12px; font-weight:700; opacity:.9;">
+      <div class="footerLine">
         Can’t wait for Valentine’s (and the rest of my life) with you 😘
       </div>
     </section>
@@ -232,7 +237,7 @@
     const dateTimeText = document.getElementById("dateTimeText");
     const card = document.getElementById("card");
 
-    const VALENTINE_DATE_TEXT = "see you on 14 february at 6:00pm baby";
+    const VALENTINE_DATE_TEXT = "See you on 14 February • 6:00 PM 💚";
 
     const confettiCanvas = document.getElementById("confettiCanvas");
 
@@ -248,17 +253,14 @@
     window.addEventListener("resize", resizeCanvas);
     window.addEventListener("orientationchange", () => setTimeout(resizeCanvas, 150));
 
-    const confettiInstance = confetti.create(confettiCanvas, {
-      resize: false,
-      useWorker: true
-    });
+    const confettiInstance = confetti.create(confettiCanvas, { resize: false, useWorker: true });
 
     function burstConfetti() {
       confettiInstance({
-        particleCount: 260,
+        particleCount: 240,
         spread: 140,
-        startVelocity: 60,
-        ticks: 240,
+        startVelocity: 55,
+        ticks: 220,
         origin: { x: 0.5, y: 0.6 }
       });
     }
@@ -354,7 +356,7 @@
     noBtn.addEventListener("mouseenter", (e) => moveNo(e.clientX, e.clientY));
     noBtn.addEventListener("click", (e) => e.preventDefault());
 
-    function typeText(el, text, speed = 35) {
+    function typeText(el, text, speed = 28) {
       el.textContent = "";
       let i = 0;
       const timer = setInterval(() => {
@@ -370,7 +372,7 @@
       result.style.display = "block";
 
       card.classList.add("heartbeat");
-      typeText(dateTimeText, VALENTINE_DATE_TEXT, 35);
+      typeText(dateTimeText, VALENTINE_DATE_TEXT, 28);
 
       resizeCanvas();
       burstConfetti();
