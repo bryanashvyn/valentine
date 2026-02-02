@@ -5,12 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Will you be my Valentine?</title>
 
-  <!-- Confetti library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <style>
     :root {
-      /* ✅ Romantic sage green palette */
+      /* Romantic sage green palette */
       --bg1: #cfe9dc;   /* soft sage */
       --bg2: #eef7f2;   /* light mint */
       --bg3: #e2f2ea;   /* subtle blend */
@@ -28,7 +27,7 @@
       display: grid;
       place-items: center;
 
-      /* ✅ Animated green gradient */
+      /* Animated green gradient */
       background: linear-gradient(120deg, var(--bg2), var(--bg1), var(--bg3));
       background-size: 300% 300%;
       animation: sageFlow 18s ease-in-out infinite;
@@ -59,7 +58,7 @@
       transform-origin: center;
     }
 
-    /* ✅ subtle heartbeat */
+    /* subtle heartbeat */
     .card.heartbeat {
       animation: heartbeat 1.2s ease-in-out infinite;
     }
@@ -104,8 +103,6 @@
       left: 18%;
       background: var(--yes);
       color: #fff;
-
-      /* ✅ soft green glow */
       box-shadow: 0 14px 34px rgba(47, 158, 111, 0.35);
     }
 
@@ -148,7 +145,6 @@
       100% { transform: scale(1); }
     }
 
-    /* ✅ Animated background */
     @keyframes sageFlow {
       0%   { background-position: 0% 50%; }
       50%  { background-position: 100% 50%; }
@@ -161,7 +157,7 @@
   <canvas id="confettiCanvas"></canvas>
 
   <main class="card" id="card">
-    <!-- ✅ Cute SVG animal -->
+    <!-- Cute SVG animal -->
     <svg class="art" viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <defs>
         <linearGradient id="fur" x1="0" x2="1">
@@ -206,11 +202,11 @@
       <button id="noBtn">No</button>
     </section>
 
-    <div class="hint" id="hint">“No” seems a bit shy 😈</div>
+    <div class="hint" id="hint">“No” seems a bit shy (just like me) </div>
 
     <section class="result" id="result">
       <h2>
-        Thank you for saying yes. I love you — you had no choice, my love ❤️
+        Thank you for saying yes. I love you but there wasn't any other choice ❤️
       </h2>
 
       <div style="font-weight:700; opacity:.9; margin: 10px 0 6px;">
@@ -245,50 +241,37 @@
     const card = document.getElementById("card");
 
     // ✅ Edit this one line only:
-    const VALENTINE_DATE_TEXT = "14 Feb 2026 • 6:00 PM";
+    const VALENTINE_DATE_TEXT = "see you on 14 Feb 2026 • 6:00 PM";
 
     /* ---------- CONFETTI CANVAS (resize-safe) ---------- */
     const confettiCanvas = document.getElementById("confettiCanvas");
 
     function resizeCanvas() {
-      confettiCanvas.width = window.innerWidth;
-      confettiCanvas.height = window.innerHeight;
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      confettiCanvas.width = Math.floor(window.innerWidth * dpr);
+      confettiCanvas.height = Math.floor(window.innerHeight * dpr);
+      confettiCanvas.style.width = "100vw";
+      confettiCanvas.style.height = "100vh";
     }
+
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
     window.addEventListener("orientationchange", () => setTimeout(resizeCanvas, 150));
 
     const confettiInstance = confetti.create(confettiCanvas, {
-      resize: true,
+      resize: false,
       useWorker: true
     });
 
-    /* ✅ Longer confetti celebration (sprinkle + finale) */
-    function longConfetti(durationMs = 4500) {
-      const end = Date.now() + durationMs;
-
-      (function frame() {
-        confettiInstance({
-          particleCount: 7,
-          spread: 75,
-          startVelocity: 28,
-          ticks: 220,
-          origin: { x: Math.random(), y: Math.random() * 0.25 }
-        });
-
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        } else {
-          // finale burst
-          confettiInstance({
-            particleCount: 280,
-            spread: 140,
-            startVelocity: 60,
-            ticks: 240,
-            origin: { x: 0.5, y: 0.6 }
-          });
-        }
-      })();
+    /* ✅ One burst only (no constant confetti) */
+    function burstConfetti() {
+      confettiInstance({
+        particleCount: 260,
+        spread: 140,
+        startVelocity: 60,
+        ticks: 240,
+        origin: { x: 0.5, y: 0.6 }
+      });
     }
 
     /* ---------- YES BUTTON GROWS ---------- */
@@ -299,58 +282,102 @@
     }
 
     /* ---------- NO BUTTON RUNS AWAY + SURRENDERS ---------- */
+    function clamp(n, min, max) {
+      return Math.max(min, Math.min(max, n));
+    }
+
     let dodgeCount = 0;
+    const SURRENDER_AFTER = 8;
     let surrendered = false;
 
-    function moveNo(px, py) {
+    // Keep vertical centering when we move it
+    function setNoPos(leftPx, topPx) {
+      noBtn.style.left = leftPx + "px";
+      noBtn.style.top = topPx + "px";
+      noBtn.style.transform = "translateY(-50%)";
+    }
+
+    // Ensure a sane starting pixel position (so movement works immediately)
+    function initNoPosition() {
+      const z = zone.getBoundingClientRect();
+      const bw = noBtn.offsetWidth;
+      const bh = noBtn.offsetHeight;
+      const startLeft = clamp(z.width * 0.62, 0, z.width - bw);
+      const startTop = clamp(z.height * 0.5 - bh * 0.5, 0, z.height - bh);
+      setNoPos(startLeft, startTop);
+    }
+
+    // init after layout
+    requestAnimationFrame(initNoPosition);
+
+    function moveNo(clientX, clientY) {
       if (surrendered) return;
 
       const z = zone.getBoundingClientRect();
-      const b = noBtn.getBoundingClientRect();
 
-      // ✅ Compute from current inline style or default position
-      const currentLeft = parseFloat(noBtn.style.left) || 0.62 * z.width;
-      const currentTop  = parseFloat(noBtn.style.top)  || (z.height / 2 - b.height / 2);
+      const currentLeft = noBtn.offsetLeft;
+      const currentTop  = noBtn.offsetTop;
+      const bw = noBtn.offsetWidth;
+      const bh = noBtn.offsetHeight;
 
-      const btnCenterX = z.left + currentLeft + b.width / 2;
-      const btnCenterY = z.top  + currentTop  + b.height / 2;
+      // button center in viewport coords
+      const centerX = z.left + currentLeft + bw / 2;
+      const centerY = z.top  + currentTop  + bh / 2;
 
-      let dx = btnCenterX - px;
-      let dy = btnCenterY - py;
+      // move away from pointer
+      let dx = centerX - clientX;
+      let dy = centerY - clientY;
       let mag = Math.hypot(dx, dy) || 1;
-
       dx /= mag;
       dy /= mag;
 
-      let newLeft = currentLeft + dx * 150;
-      let newTop  = currentTop  + dy * 150;
+      // movement step
+      let newLeft = currentLeft + dx * 170;
+      let newTop  = currentTop  + dy * 140;
 
-      newLeft = Math.max(0, Math.min(z.width - b.width, newLeft));
-      newTop  = Math.max(0, Math.min(z.height - b.height, newTop));
+      // clamp inside zone
+      newLeft = clamp(newLeft, 0, z.width - bw);
+      newTop  = clamp(newTop, 0, z.height - bh);
 
-      noBtn.style.left = newLeft + "px";
-      noBtn.style.top  = newTop + "px";
-      noBtn.style.transform = "none"; // after first move, we place by pixels
+      setNoPos(newLeft, newTop);
 
       growYes();
       dodgeCount++;
 
-      if (dodgeCount >= 8) {
+      if (dodgeCount >= SURRENDER_AFTER) {
         surrendered = true;
         noBtn.textContent = "Okay fine 😳";
         hint.textContent = "Just press Yes already 😌";
       }
     }
 
-    zone.addEventListener("pointermove", (e) => {
+    // Detect closeness to No, then move it
+    function handleMove(clientX, clientY) {
+      if (surrendered) return;
+
       const b = noBtn.getBoundingClientRect();
       const d = Math.hypot(
-        (b.left + b.width / 2) - e.clientX,
-        (b.top + b.height / 2) - e.clientY
+        (b.left + b.width / 2) - clientX,
+        (b.top + b.height / 2) - clientY
       );
-      if (d < 140) moveNo(e.clientX, e.clientY);
-    });
 
+      if (d < 160) moveNo(clientX, clientY);
+    }
+
+    // Works across desktop + mobile + in-app browsers
+    zone.addEventListener("pointermove", (e) => handleMove(e.clientX, e.clientY));
+    zone.addEventListener("mousemove", (e) => handleMove(e.clientX, e.clientY));
+    zone.addEventListener("touchmove", (e) => {
+      const t = e.touches && e.touches[0];
+      if (!t) return;
+      handleMove(t.clientX, t.clientY);
+    }, { passive: true });
+
+    // Guaranteed trigger if they approach/hover No
+    noBtn.addEventListener("pointerenter", (e) => moveNo(e.clientX, e.clientY));
+    noBtn.addEventListener("mouseenter", (e) => moveNo(e.clientX, e.clientY));
+
+    // Keep No unclickable
     noBtn.addEventListener("click", (e) => e.preventDefault());
 
     /* ---------- Typing animation for date/time ---------- */
@@ -372,7 +399,10 @@
 
       card.classList.add("heartbeat");
       typeText(dateTimeText, VALENTINE_DATE_TEXT, 35);
-      longConfetti(4500);
+
+      // One clean burst
+      resizeCanvas();
+      burstConfetti();
     });
   </script>
 </body>
