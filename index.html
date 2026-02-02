@@ -68,6 +68,9 @@
       margin: 0 auto 10px;
       display: block;
       filter: drop-shadow(0 10px 14px rgba(0,0,0,.10));
+      /* ✅ bounce / float */
+      animation: floaty 2.8s ease-in-out infinite;
+      will-change: transform;
     }
 
     h1 {
@@ -150,6 +153,13 @@
       50%  { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
+
+    /* ✅ gentle bounce */
+    @keyframes floaty {
+      0%   { transform: translateY(0); }
+      50%  { transform: translateY(-8px); }
+      100% { transform: translateY(0); }
+    }
   </style>
 </head>
 
@@ -157,42 +167,42 @@
   <canvas id="confettiCanvas"></canvas>
 
   <main class="card" id="card">
-    <!-- Cute SVG animal -->
-    <svg class="art" viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <!-- ✅ Coconut SVG -->
+    <svg class="art" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <defs>
-        <linearGradient id="fur" x1="0" x2="1">
-          <stop offset="0" stop-color="#f7c7a1"/>
-          <stop offset="1" stop-color="#f2a97b"/>
+        <linearGradient id="cocoShell" x1="0" x2="1">
+          <stop offset="0%" stop-color="#b08968"/>
+          <stop offset="100%" stop-color="#7f5539"/>
         </linearGradient>
-        <linearGradient id="heart" x1="0" x2="1">
-          <stop offset="0" stop-color="#ff4d7d"/>
-          <stop offset="1" stop-color="#ff1f68"/>
+
+        <linearGradient id="cocoHeart" x1="0" x2="1">
+          <stop offset="0%" stop-color="#ff6b9a"/>
+          <stop offset="100%" stop-color="#ff3b7a"/>
         </linearGradient>
       </defs>
 
-      <path d="M250 50 C250 33 270 25 282 38
-               C294 25 314 33 314 50
-               C314 78 282 92 282 106
-               C282 92 250 78 250 50Z"
-            fill="url(#heart)"/>
+      <!-- coconut body -->
+      <ellipse cx="130" cy="145" rx="85" ry="90" fill="url(#cocoShell)" />
 
-      <path d="M90 120 C90 70 140 40 190 60
-               C240 40 290 70 290 120
-               C290 180 240 210 190 210
-               C140 210 90 180 90 120Z"
-            fill="url(#fur)"/>
+      <!-- coconut top holes -->
+      <circle cx="110" cy="115" r="6" fill="#4a2c1a"/>
+      <circle cx="130" cy="110" r="6" fill="#4a2c1a"/>
+      <circle cx="150" cy="115" r="6" fill="#4a2c1a"/>
 
-      <path d="M110 92 L95 55 L140 78 Z" fill="#f2a97b"/>
-      <path d="M270 92 L285 55 L240 78 Z" fill="#f2a97b"/>
+      <!-- eyes -->
+      <circle cx="105" cy="155" r="7" fill="#1f2937"/>
+      <circle cx="155" cy="155" r="7" fill="#1f2937"/>
 
-      <circle cx="160" cy="130" r="8"/>
-      <circle cx="220" cy="130" r="8"/>
+      <!-- smile -->
+      <path d="M110 170 Q130 185 150 170" stroke="#1f2937" stroke-width="4" fill="none" stroke-linecap="round"/>
 
-      <path d="M190 144 C186 144 182 148 182 152
-               C182 160 190 164 190 170
-               C190 164 198 160 198 152
-               C198 148 194 144 190 144Z"
-            fill="#ff7aa2"/>
+      <!-- heart -->
+      <path d="M130 70
+               C120 55 95 60 95 80
+               C95 105 130 115 130 130
+               C130 115 165 105 165 80
+               C165 60 140 55 130 70Z"
+            fill="url(#cocoHeart)"/>
     </svg>
 
     <h1>Khushi, will you be my Valentine?</h1>
@@ -202,15 +212,15 @@
       <button id="noBtn">No</button>
     </section>
 
-    <div class="hint" id="hint">“No” seems a bit shy (just like me) </div>
+    <div class="hint" id="hint"> “No” seems a bit shy (just like me) </div>
 
     <section class="result" id="result">
       <h2>
-        Thank you for saying yes. I love you but there wasn't any other choice babes
+        Thank you for saying yes but im sorry you had no choice
       </h2>
 
       <div style="font-weight:700; opacity:.9; margin: 10px 0 6px;">
-       date:
+       i love you khushi
       </div>
 
       <div id="dateTimeText" style="
@@ -241,7 +251,7 @@
     const card = document.getElementById("card");
 
     // ✅ Edit this one line only:
-    const VALENTINE_DATE_TEXT = "see you on 14 Feb 2026 baby";
+    const VALENTINE_DATE_TEXT = "see you on 14 february at 6:00pm" ;
 
     /* ---------- CONFETTI CANVAS (resize-safe) ---------- */
     const confettiCanvas = document.getElementById("confettiCanvas");
@@ -290,14 +300,12 @@
     const SURRENDER_AFTER = 8;
     let surrendered = false;
 
-    // Keep vertical centering when we move it
     function setNoPos(leftPx, topPx) {
       noBtn.style.left = leftPx + "px";
       noBtn.style.top = topPx + "px";
       noBtn.style.transform = "translateY(-50%)";
     }
 
-    // Ensure a sane starting pixel position (so movement works immediately)
     function initNoPosition() {
       const z = zone.getBoundingClientRect();
       const bw = noBtn.offsetWidth;
@@ -307,35 +315,29 @@
       setNoPos(startLeft, startTop);
     }
 
-    // init after layout
     requestAnimationFrame(initNoPosition);
 
     function moveNo(clientX, clientY) {
       if (surrendered) return;
 
       const z = zone.getBoundingClientRect();
-
       const currentLeft = noBtn.offsetLeft;
       const currentTop  = noBtn.offsetTop;
       const bw = noBtn.offsetWidth;
       const bh = noBtn.offsetHeight;
 
-      // button center in viewport coords
       const centerX = z.left + currentLeft + bw / 2;
       const centerY = z.top  + currentTop  + bh / 2;
 
-      // move away from pointer
       let dx = centerX - clientX;
       let dy = centerY - clientY;
       let mag = Math.hypot(dx, dy) || 1;
       dx /= mag;
       dy /= mag;
 
-      // movement step
       let newLeft = currentLeft + dx * 170;
       let newTop  = currentTop  + dy * 140;
 
-      // clamp inside zone
       newLeft = clamp(newLeft, 0, z.width - bw);
       newTop  = clamp(newTop, 0, z.height - bh);
 
@@ -351,7 +353,6 @@
       }
     }
 
-    // Detect closeness to No, then move it
     function handleMove(clientX, clientY) {
       if (surrendered) return;
 
@@ -364,7 +365,6 @@
       if (d < 160) moveNo(clientX, clientY);
     }
 
-    // Works across desktop + mobile + in-app browsers
     zone.addEventListener("pointermove", (e) => handleMove(e.clientX, e.clientY));
     zone.addEventListener("mousemove", (e) => handleMove(e.clientX, e.clientY));
     zone.addEventListener("touchmove", (e) => {
@@ -373,11 +373,9 @@
       handleMove(t.clientX, t.clientY);
     }, { passive: true });
 
-    // Guaranteed trigger if they approach/hover No
     noBtn.addEventListener("pointerenter", (e) => moveNo(e.clientX, e.clientY));
     noBtn.addEventListener("mouseenter", (e) => moveNo(e.clientX, e.clientY));
 
-    // Keep No unclickable
     noBtn.addEventListener("click", (e) => e.preventDefault());
 
     /* ---------- Typing animation for date/time ---------- */
@@ -400,7 +398,6 @@
       card.classList.add("heartbeat");
       typeText(dateTimeText, VALENTINE_DATE_TEXT, 35);
 
-      // One clean burst
       resizeCanvas();
       burstConfetti();
     });
