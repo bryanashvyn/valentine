@@ -5,15 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Will you be my Valentine?</title>
 
+  <!-- Confetti library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <style>
     :root {
-      --bg1: #ffd6e7;
-      --bg2: #ffeef6;
+      /* ✅ Romantic sage green palette */
+      --bg1: #cfe9dc;   /* soft sage */
+      --bg2: #eef7f2;   /* light mint */
+      --bg3: #e2f2ea;   /* subtle blend */
       --card: #ffffffcc;
-      --yes: #ff3b7a;
-      --yesHover: #ff1f68;
+
+      --yes: #2f9e6f;   /* romantic green */
+      --yesHover: #24875f;
     }
 
     * { box-sizing: border-box; }
@@ -23,12 +27,18 @@
       min-height: 100svh;
       display: grid;
       place-items: center;
-      background: radial-gradient(circle at top, var(--bg2), var(--bg1));
-      font-family: system-ui, sans-serif;
+
+      /* ✅ Animated green gradient */
+      background: linear-gradient(120deg, var(--bg2), var(--bg1), var(--bg3));
+      background-size: 300% 300%;
+      animation: sageFlow 18s ease-in-out infinite;
+
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       overflow: hidden;
       padding: 16px;
     }
 
+    /* FULL-SCREEN CONFETTI CANVAS */
     #confettiCanvas {
       position: fixed;
       inset: 0;
@@ -54,13 +64,11 @@
       animation: heartbeat 1.2s ease-in-out infinite;
     }
 
-    @keyframes heartbeat {
-      0%   { transform: scale(1); }
-      14%  { transform: scale(1.02); }
-      28%  { transform: scale(1); }
-      42%  { transform: scale(1.015); }
-      70%  { transform: scale(1); }
-      100% { transform: scale(1); }
+    .art {
+      width: min(260px, 80vw);
+      margin: 0 auto 10px;
+      display: block;
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,.10));
     }
 
     h1 {
@@ -87,7 +95,7 @@
       border: none;
       cursor: pointer;
       box-shadow: 0 10px 24px rgba(0,0,0,.14);
-      transition: transform .12s ease;
+      transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
@@ -96,7 +104,12 @@
       left: 18%;
       background: var(--yes);
       color: #fff;
+
+      /* ✅ soft green glow */
+      box-shadow: 0 14px 34px rgba(47, 158, 111, 0.35);
     }
+
+    #yesBtn:hover { background: var(--yesHover); }
 
     #noBtn {
       left: 62%;
@@ -116,9 +129,30 @@
       animation: pop .35s ease;
     }
 
+    .result h2 {
+      font-size: clamp(22px, 4vw, 34px);
+      margin: 10px 0;
+    }
+
     @keyframes pop {
       from { transform: scale(.96); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes heartbeat {
+      0%   { transform: scale(1); }
+      14%  { transform: scale(1.02); }
+      28%  { transform: scale(1); }
+      42%  { transform: scale(1.015); }
+      70%  { transform: scale(1); }
+      100% { transform: scale(1); }
+    }
+
+    /* ✅ Animated background */
+    @keyframes sageFlow {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
   </style>
 </head>
@@ -127,6 +161,44 @@
   <canvas id="confettiCanvas"></canvas>
 
   <main class="card" id="card">
+    <!-- ✅ Cute SVG animal -->
+    <svg class="art" viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="fur" x1="0" x2="1">
+          <stop offset="0" stop-color="#f7c7a1"/>
+          <stop offset="1" stop-color="#f2a97b"/>
+        </linearGradient>
+        <linearGradient id="heart" x1="0" x2="1">
+          <stop offset="0" stop-color="#ff4d7d"/>
+          <stop offset="1" stop-color="#ff1f68"/>
+        </linearGradient>
+      </defs>
+
+      <path d="M250 50 C250 33 270 25 282 38
+               C294 25 314 33 314 50
+               C314 78 282 92 282 106
+               C282 92 250 78 250 50Z"
+            fill="url(#heart)"/>
+
+      <path d="M90 120 C90 70 140 40 190 60
+               C240 40 290 70 290 120
+               C290 180 240 210 190 210
+               C140 210 90 180 90 120Z"
+            fill="url(#fur)"/>
+
+      <path d="M110 92 L95 55 L140 78 Z" fill="#f2a97b"/>
+      <path d="M270 92 L285 55 L240 78 Z" fill="#f2a97b"/>
+
+      <circle cx="160" cy="130" r="8"/>
+      <circle cx="220" cy="130" r="8"/>
+
+      <path d="M190 144 C186 144 182 148 182 152
+               C182 160 190 164 190 170
+               C190 164 198 160 198 152
+               C198 148 194 144 190 144Z"
+            fill="#ff7aa2"/>
+    </svg>
+
     <h1>Khushi, will you be my Valentine?</h1>
 
     <section class="button-zone" id="zone">
@@ -141,19 +213,23 @@
         Thank you for saying yes. I love you — you had no choice, my love ❤️
       </h2>
 
-      <div style="font-weight:700; margin: 10px 0 6px;">Our date:</div>
+      <div style="font-weight:700; opacity:.9; margin: 10px 0 6px;">
+        Our date:
+      </div>
 
       <div id="dateTimeText" style="
         font-size: 20px;
         font-weight: 900;
+        letter-spacing: .2px;
         padding: 10px 14px;
+        display: inline-block;
         border-radius: 999px;
         background: #ffffffa8;
-        display: inline-block;
+        box-shadow: 0 10px 24px rgba(0,0,0,.10);
         min-width: 220px;
       "></div>
 
-      <div style="margin-top: 12px; font-weight:700;">
+      <div style="margin-top: 12px; font-weight:700; opacity:.9;">
         Can’t wait for Valentine’s (and the rest of my life) with you 😘
       </div>
     </section>
@@ -168,6 +244,7 @@
     const dateTimeText = document.getElementById("dateTimeText");
     const card = document.getElementById("card");
 
+    // ✅ Edit this one line only:
     const VALENTINE_DATE_TEXT = "14 Feb 2026 • 6:00 PM";
 
     /* ---------- CONFETTI CANVAS (resize-safe) ---------- */
@@ -177,12 +254,42 @@
       confettiCanvas.width = window.innerWidth;
       confettiCanvas.height = window.innerHeight;
     }
-
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
     window.addEventListener("orientationchange", () => setTimeout(resizeCanvas, 150));
 
-    const confettiInstance = confetti.create(confettiCanvas, { resize: true });
+    const confettiInstance = confetti.create(confettiCanvas, {
+      resize: true,
+      useWorker: true
+    });
+
+    /* ✅ Longer confetti celebration (sprinkle + finale) */
+    function longConfetti(durationMs = 4500) {
+      const end = Date.now() + durationMs;
+
+      (function frame() {
+        confettiInstance({
+          particleCount: 7,
+          spread: 75,
+          startVelocity: 28,
+          ticks: 220,
+          origin: { x: Math.random(), y: Math.random() * 0.25 }
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        } else {
+          // finale burst
+          confettiInstance({
+            particleCount: 280,
+            spread: 140,
+            startVelocity: 60,
+            ticks: 240,
+            origin: { x: 0.5, y: 0.6 }
+          });
+        }
+      })();
+    }
 
     /* ---------- YES BUTTON GROWS ---------- */
     let yesScale = 1;
@@ -201,19 +308,29 @@
       const z = zone.getBoundingClientRect();
       const b = noBtn.getBoundingClientRect();
 
-      let dx = (b.left + b.width / 2) - px;
-      let dy = (b.top + b.height / 2) - py;
+      // ✅ Compute from current inline style or default position
+      const currentLeft = parseFloat(noBtn.style.left) || 0.62 * z.width;
+      const currentTop  = parseFloat(noBtn.style.top)  || (z.height / 2 - b.height / 2);
+
+      const btnCenterX = z.left + currentLeft + b.width / 2;
+      const btnCenterY = z.top  + currentTop  + b.height / 2;
+
+      let dx = btnCenterX - px;
+      let dy = btnCenterY - py;
       let mag = Math.hypot(dx, dy) || 1;
 
       dx /= mag;
       dy /= mag;
 
-      let newLeft = (b.left - z.left) + dx * 150;
-      let newTop = (b.top - z.top) + dy * 150;
+      let newLeft = currentLeft + dx * 150;
+      let newTop  = currentTop  + dy * 150;
 
-      noBtn.style.left = Math.max(0, Math.min(z.width - b.width, newLeft)) + "px";
-      noBtn.style.top = Math.max(0, Math.min(z.height - b.height, newTop)) + "px";
-      noBtn.style.transform = "none";
+      newLeft = Math.max(0, Math.min(z.width - b.width, newLeft));
+      newTop  = Math.max(0, Math.min(z.height - b.height, newTop));
+
+      noBtn.style.left = newLeft + "px";
+      noBtn.style.top  = newTop + "px";
+      noBtn.style.transform = "none"; // after first move, we place by pixels
 
       growYes();
       dodgeCount++;
@@ -225,7 +342,7 @@
       }
     }
 
-    zone.addEventListener("pointermove", e => {
+    zone.addEventListener("pointermove", (e) => {
       const b = noBtn.getBoundingClientRect();
       const d = Math.hypot(
         (b.left + b.width / 2) - e.clientX,
@@ -234,7 +351,9 @@
       if (d < 140) moveNo(e.clientX, e.clientY);
     });
 
-    /* ---------- ✅ typing animation for date/time ---------- */
+    noBtn.addEventListener("click", (e) => e.preventDefault());
+
+    /* ---------- Typing animation for date/time ---------- */
     function typeText(el, text, speed = 35) {
       el.textContent = "";
       let i = 0;
@@ -251,14 +370,9 @@
       hint.style.display = "none";
       result.style.display = "block";
 
-      // start heartbeat
       card.classList.add("heartbeat");
-
-      // type date/time
       typeText(dateTimeText, VALENTINE_DATE_TEXT, 35);
-
-      // confetti burst
-      confettiInstance({ particleCount: 300, spread: 140, origin: { y: 0.6 } });
+      longConfetti(4500);
     });
   </script>
 </body>
